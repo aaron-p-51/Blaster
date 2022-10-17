@@ -7,7 +7,11 @@
 		{
 			"Name": "Blaster",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"UMG"
+			]
 		}
 	],
 	"Plugins": [
@@ -16,6 +20,15 @@
 			"Enabled": true,
 			"TargetAllowList": [
 				"Editor"
+			]
+		},
+		{
+			"Name": "Bridge",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Mac",
+				"Linux"
 			]
 		}
 	]
