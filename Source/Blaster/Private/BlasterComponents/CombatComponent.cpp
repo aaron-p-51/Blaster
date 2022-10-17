@@ -5,6 +5,7 @@
 
 // Engine Includes
 #include "Engine/SkeletalMeshSocket.h"
+#include "Components/SphereComponent.h"
 
 
 // Game Includes
@@ -50,6 +51,5 @@ void UCombatComponent::EquipWeapon(class AWeapon* WeaponToEquip)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->ShowPickupWidget(false);
-}
+	}
 
