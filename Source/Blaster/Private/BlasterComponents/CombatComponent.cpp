@@ -6,6 +6,7 @@
 // Engine Includes
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Game Includes
@@ -21,7 +22,6 @@ UCombatComponent::UCombatComponent()
 }
 
 
-
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -31,13 +31,21 @@ void UCombatComponent::BeginPlay()
 }
 
 
-
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
 }
+
+
+void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+}
+
 
 void UCombatComponent::EquipWeapon(class AWeapon* WeaponToEquip)
 {
@@ -51,5 +59,6 @@ void UCombatComponent::EquipWeapon(class AWeapon* WeaponToEquip)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
-	}
+}
+
 
