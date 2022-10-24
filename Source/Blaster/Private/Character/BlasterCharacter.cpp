@@ -75,14 +75,17 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 }
 
+
 void ABlasterCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
 	if (Combat)
 	{
 		Combat->Character = this;
 	}
 }
+
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
