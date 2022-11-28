@@ -7,9 +7,13 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Animation/AnimationAsset.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 // Game Includes
 #include "Character/BlasterCharacter.h"
+#include "Weapon/Casing.h"
 
 // Sets default values
 AWeapon::AWeapon()
@@ -132,6 +136,38 @@ void AWeapon::ShowPickupWidget(bool bShowWidget)
 	if (PickupWidget)
 	{
 		PickupWidget->SetVisibility(bShowWidget);
+	}
+}
+
+void AWeapon::Fire(const FVector& HitTarget)
+{
+	if (FireAnimation)
+	{
+		WeaponMesh->PlayAnimation(FireAnimation, false);
+	}
+
+	if (CasingClass)
+	{
+		const USkeletalMeshSocket* AmmoEjectSocket = WeaponMesh->GetSocketByName(FName("AmmoEject"));
+		if (AmmoEjectSocket)
+		{
+			FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(WeaponMesh);
+
+			if (CasingClass)
+			{
+				UWorld* World = GetWorld();
+				if (World)
+				{
+
+					FRotator AmmoEjectSocketRotation = SocketTransform.GetRotation().Rotator();
+					AmmoEjectSocketRotation.Pitch += FMath::RandRange(-15.f, 15.f);
+					AmmoEjectSocketRotation.Yaw += FMath::RandRange(-15.f, 15.f);
+					AmmoEjectSocketRotation.Roll += FMath::RandRange(-15.f, 15.f);
+
+					World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), AmmoEjectSocketRotation);
+				}
+			}
+		}
 	}
 }
 
