@@ -14,17 +14,36 @@ class BLASTER_API ACasing : public AActor
 public:	
 
 	ACasing();
-private:
 
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* CasingMesh;
 
 
 protected:
 
 	virtual void BeginPlay() override;
 
-public:	
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+private:
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* CasingMesh;
+
+	UPROPERTY(EditAnywhere)
+	float ShellEjectionImpulse;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* ShellSound;
+
+	UPROPERTY(EditAnywhere)
+	float LifeTimeAfterOnHit;
+
+	FTimerHandle TimeHandle_LifetimeAfterOnHit;
+
+	void OnLifetimeAfterOnHitExceeded();
+
+	bool OnHitTriggered;
+	
 
 
 

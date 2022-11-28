@@ -158,7 +158,13 @@ void AWeapon::Fire(const FVector& HitTarget)
 				UWorld* World = GetWorld();
 				if (World)
 				{
-					World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), SocketTransform.GetRotation().Rotator());
+
+					FRotator AmmoEjectSocketRotation = SocketTransform.GetRotation().Rotator();
+					AmmoEjectSocketRotation.Pitch += FMath::RandRange(-15.f, 15.f);
+					AmmoEjectSocketRotation.Yaw += FMath::RandRange(-15.f, 15.f);
+					AmmoEjectSocketRotation.Roll += FMath::RandRange(-15.f, 15.f);
+
+					World->SpawnActor<ACasing>(CasingClass, SocketTransform.GetLocation(), AmmoEjectSocketRotation);
 				}
 			}
 		}
