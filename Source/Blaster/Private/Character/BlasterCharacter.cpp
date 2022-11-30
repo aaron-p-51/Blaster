@@ -16,6 +16,7 @@
 // Game Includes
 #include "Weapon/Weapon.h"
 #include "BlasterComponents/CombatComponent.h"
+#include "Blaster/Blaster.h"
 
 // Sets default values
 ABlasterCharacter::ABlasterCharacter()
@@ -43,6 +44,7 @@ ABlasterCharacter::ABlasterCharacter()
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
@@ -77,6 +79,9 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	HideCameraIfCharacterClose();
 
 }
+
+
+
 
 
 void ABlasterCharacter::HideCameraIfCharacterClose()
@@ -114,7 +119,6 @@ void ABlasterCharacter::PostInitializeComponents()
 
 void ABlasterCharacter::PlayFireMontage(bool bAiming)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Fire"));
 	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -124,10 +128,27 @@ void ABlasterCharacter::PlayFireMontage(bool bAiming)
 		FName SectionName;
 		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
 		AnimInstance->Montage_JumpToSection(SectionName);
-		UE_LOG(LogTemp, Warning, TEXT("Fire"));
 	}
+}
 
 
+void ABlasterCharacter::PlayHitReactMontage()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		FName SectionName("FromFront");
+		//SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void ABlasterCharacter::MulticastHit_Implementation()
+{
+	PlayHitReactMontage();
 }
 
 
