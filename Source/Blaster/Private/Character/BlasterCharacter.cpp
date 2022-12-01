@@ -14,6 +14,7 @@
 #include "Character/BlasterAnimInstance.h"
 #include "GameMode/BlasterGameMode.h"
 
+
 // Game Includes
 #include "Weapon/Weapon.h"
 #include "BlasterComponents/CombatComponent.h"
@@ -174,7 +175,6 @@ void ABlasterCharacter::PlayHitReactMontage()
 
 
 
-
 void ABlasterCharacter::OnRep_ReplicatedMovement()
 {
 	Super::OnRep_ReplicatedMovement();
@@ -182,6 +182,8 @@ void ABlasterCharacter::OnRep_ReplicatedMovement()
 	SimProxiesTurn();
 	TimeSinceLastMovementReplication = 0.f;
 }
+
+
 
 
 
@@ -553,10 +555,27 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 }
 
 
-void ABlasterCharacter::Elim_Implementation()
+void ABlasterCharacter::Elim()
+{
+	MulticastElim();
+	GetWorldTimerManager().SetTimer(ElimTimer, this, &ABlasterCharacter::ElimTimerFinished, ElimDelay, false);
+}
+
+
+void ABlasterCharacter::MulticastElim_Implementation()
 {
 	bElimmed = true;
 	PlayElimMontage();
+}
+
+
+void ABlasterCharacter::ElimTimerFinished()
+{
+	ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>();
+	if (BlasterGameMode)
+	{
+		BlasterGameMode->RequestRespawn(this, Controller);
+	}
 }
 
 
