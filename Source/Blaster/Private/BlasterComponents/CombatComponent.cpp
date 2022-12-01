@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
+#include "TimerManager.h"
 
 
 // Game Includes
@@ -26,8 +27,6 @@ UCombatComponent::UCombatComponent()
 
 	BaseWalkSpeed = 600.f;
 	AimWalkSpeed = 450.f;
-
-
 }
 
 
@@ -146,24 +145,6 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 }
 
 
-void UCombatComponent::EquipWeapon(class AWeapon* WeaponToEquip)
-{
-	if (Character == nullptr || WeaponToEquip == nullptr) return;
-
-	EquippedWeapon = WeaponToEquip;
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName("RightHandSocket");
-	if (HandSocket)
-	{
-		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
-	}
-	EquippedWeapon->SetOwner(Character);
-	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-	Character->bUseControllerRotationYaw = true;
-	UE_LOG(LogTemp, Warning, TEXT("Weapon equipped"));
-}
-
-
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Is Aming: %d"), bIsAiming);
@@ -186,30 +167,49 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 }
 
 
-void UCombatComponent::OnRep_EquippedWeapon()
-{
-	if (EquippedWeapon && Character)
-	{
-		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-		Character->bUseControllerRotationYaw = true;
-	}
-}
-
-
 void UCombatComponent::FireButtonPressed(bool bPressed)
 {
 	bFireButtonPressed = bPressed;
 
 	if (bFireButtonPressed)
 	{
-		FHitResult HitResult;
-		TraceUnderCrosshairs(HitResult);
-		ServerFire(HitResult.ImpactPoint);
+		Fire();
+	}
+}
 
+
+void UCombatComponent::Fire()
+{
+	if (bCanFire)
+	{
+		bCanFire = false;
+
+		ServerFire(HitTarget);
 		if (EquippedWeapon)
 		{
 			CrosshairShootingFactor = 0.75f;
 		}
+		StartFireTimer();
+	}
+}
+
+
+void UCombatComponent::StartFireTimer()
+{
+	if (EquippedWeapon == nullptr || Character == nullptr) return;
+
+	Character->GetWorldTimerManager().SetTimer(FireTimer, this, &UCombatComponent::FireTimerFinished, EquippedWeapon->FireDelay);
+}
+
+
+void UCombatComponent::FireTimerFinished()
+{
+	if (EquippedWeapon == nullptr) return;
+
+	bCanFire = true;
+	if (bFireButtonPressed && EquippedWeapon->bAutomatic)
+	{
+		Fire();
 	}
 }
 
@@ -227,6 +227,34 @@ void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& T
 	{
 		Character->PlayFireMontage(bAiming);
 		EquippedWeapon->Fire(TraceHitTarget);
+	}
+}
+
+
+void UCombatComponent::EquipWeapon(class AWeapon* WeaponToEquip)
+{
+	if (Character == nullptr || WeaponToEquip == nullptr) return;
+
+	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName("RightHandSocket");
+	if (HandSocket)
+	{
+		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+	}
+	EquippedWeapon->SetOwner(Character);
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
+	UE_LOG(LogTemp, Warning, TEXT("Weapon equipped"));
+}
+
+
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	if (EquippedWeapon && Character)
+	{
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Character->bUseControllerRotationYaw = true;
 	}
 }
 

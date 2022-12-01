@@ -52,11 +52,22 @@ public:
 	 * Zoom FOV while aiming
 	 */
 
-	 UPROPERTY(EditAnywhere)
-	 float ZoomedFOV = 30.f;
+	UPROPERTY(EditAnywhere)
+	float ZoomedFOV = 30.f;
 
-	 UPROPERTY(EditAnywhere)
-	 float ZoomInterpSpeed = 20.f;
+	UPROPERTY(EditAnywhere)
+	float ZoomInterpSpeed = 20.f;
+
+	/**
+	 * Automatic Fire
+	 */
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float FireDelay = 0.15f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	bool bAutomatic = true;
+
 
 protected:
 	
