@@ -33,9 +33,6 @@ AProjectile::AProjectile()
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
-	
-
-
 }
 
 
@@ -53,25 +50,17 @@ void AProjectile::BeginPlay()
 			GetActorRotation(),
 			EAttachLocation::KeepWorldPosition
 		);
-			
 	}
 
 	if (HasAuthority())
 	{
 		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 	}
-	
 }
 
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(OtherActor);
-	if (BlasterCharacter)
-	{
-		BlasterCharacter->MulticastHit();
-	}
-
 	Destroy();
 }
 
@@ -81,6 +70,7 @@ void AProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
 
 void AProjectile::Destroyed()
 {

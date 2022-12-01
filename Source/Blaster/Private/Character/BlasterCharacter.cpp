@@ -55,19 +55,15 @@ ABlasterCharacter::ABlasterCharacter()
 }
 
 
-
-
-
-
-
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	BlasterPlayerController = Cast<ABlasterPlayerController>(Controller);
-	if (BlasterPlayerController)
+	UpdateHUDHealth();
+
+	if (HasAuthority())
 	{
-		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+		OnTakeAnyDamage.AddDynamic(this, &ABlasterCharacter::ReceiveDamage);
 	}
 }
 
@@ -92,9 +88,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	
 	HideCameraIfCharacterClose();
 }
-
-
-
 
 
 void ABlasterCharacter::HideCameraIfCharacterClose()
@@ -126,8 +119,6 @@ float ABlasterCharacter::CalculateSpeed() const
 
 	return Velocity.Size();
 }
-
-
 
 
 void ABlasterCharacter::PostInitializeComponents()
@@ -170,10 +161,7 @@ void ABlasterCharacter::PlayHitReactMontage()
 	}
 }
 
-void ABlasterCharacter::MulticastHit_Implementation()
-{
-	PlayHitReactMontage();
-}
+
 
 
 void ABlasterCharacter::OnRep_ReplicatedMovement()
@@ -183,6 +171,7 @@ void ABlasterCharacter::OnRep_ReplicatedMovement()
 	SimProxiesTurn();
 	TimeSinceLastMovementReplication = 0.f;
 }
+
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -265,8 +254,6 @@ void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 		Combat->EquipWeapon(OverlappingWeapon);
 	}
 }
-
-
 
 
 void ABlasterCharacter::CrouchButtonPressed()
@@ -514,10 +501,32 @@ FVector ABlasterCharacter::GetHitTarget() const
 	return Combat->HitTarget;
 }
 
+
 void ABlasterCharacter::OnRep_Health()
 {
-
+	UpdateHUDHealth();
+	PlayHitReactMontage();
 }
+
+
+void ABlasterCharacter::UpdateHUDHealth()
+{
+	BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
+	if (BlasterPlayerController)
+	{
+		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+
+
+void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+
+	UpdateHUDHealth();
+	PlayHitReactMontage();
+}
+
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
