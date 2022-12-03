@@ -179,9 +179,10 @@ private:
 	 class USoundCue* ElimBotSound;
 
 
-
+	UPROPERTY()
 	class ABlasterPlayerController* BlasterPlayerController;
 
+	UPROPERTY()
 	class ABlasterPlayerState* BlasterPlayerState;
 
 public:	

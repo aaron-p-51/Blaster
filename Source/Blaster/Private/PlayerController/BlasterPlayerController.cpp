@@ -63,15 +63,31 @@ void ABlasterPlayerController::SetHUDScore(float Score)
 	{
 		bool bHUDValid = BlasterHUD &&
 			BlasterHUD->CharacterOverlay &&
-			BlasterHUD->CharacterOverlay->ScoreAmmount;
+			BlasterHUD->CharacterOverlay->ScoreAmount;
 		if (bHUDValid)
 		{
 			FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
-			BlasterHUD->CharacterOverlay->ScoreAmmount->SetText(FText::FromString(ScoreText));
+			BlasterHUD->CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreText));
 		}
 	}
 }
 
+
+void ABlasterPlayerController::SetHUDDefeats(int32 Defeats)
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	if (BlasterHUD)
+	{
+		bool bHUDValid = BlasterHUD &&
+			BlasterHUD->CharacterOverlay &&
+			BlasterHUD->CharacterOverlay->DefeatsAmount;
+		if (bHUDValid)
+		{
+			FString DefeatsText = FString::Printf(TEXT("%d"), Defeats);
+			BlasterHUD->CharacterOverlay->DefeatsAmount->SetText(FText::FromString(DefeatsText));
+		}
+	}
+}
 
 
 

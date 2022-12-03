@@ -4,6 +4,7 @@
 #include "PlayerState/BlasterPlayerState.h"
 
 // Engine Includes
+#include "Net/UnrealNetwork.h"
 
 
 // Game Includes
@@ -39,4 +40,41 @@ void ABlasterPlayerState::AddToScore(float ScoreAmmount)
 			Controller->SetHUDScore(GetScore());
 		}
 	}
+}
+
+
+void ABlasterPlayerState::AddToDefeats(int32 DefeatsAmount)
+{
+	Defeats += DefeatsAmount;
+	Character = Character == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : Character;
+	if (Character)
+	{
+		Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+		if (Controller)
+		{
+			Controller->SetHUDDefeats(Defeats);
+		}
+	}
+}
+
+
+void ABlasterPlayerState::OnRep_Defeats()
+{
+	Character = Character == nullptr ? Cast<ABlasterCharacter>(GetPawn()) : Character;
+	if (Character)
+	{
+		Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+		if (Controller)
+		{
+			Controller->SetHUDDefeats(Defeats);
+		}
+	}
+}
+
+
+void ABlasterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABlasterPlayerState, Defeats);
 }
