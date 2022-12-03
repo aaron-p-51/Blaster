@@ -56,6 +56,22 @@ void ABlasterPlayerController::SetHUDHealth(float Health, float MaxHealth)
 }
 
 
+void ABlasterPlayerController::SetHUDScore(float Score)
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	if (BlasterHUD)
+	{
+		bool bHUDValid = BlasterHUD &&
+			BlasterHUD->CharacterOverlay &&
+			BlasterHUD->CharacterOverlay->ScoreAmmount;
+		if (bHUDValid)
+		{
+			FString ScoreText = FString::Printf(TEXT("%d"), FMath::FloorToInt(Score));
+			BlasterHUD->CharacterOverlay->ScoreAmmount->SetText(FText::FromString(ScoreText));
+		}
+	}
+}
+
 
 
 
