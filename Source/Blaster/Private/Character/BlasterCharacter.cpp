@@ -646,7 +646,6 @@ void ABlasterCharacter::UpdateDissolveMaterial(float DissolveValue)
 {
 	if (DynamicDissolveMaterialInstance)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Dissove Value"));
 		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), DissolveValue);
 	}
 }
