@@ -24,6 +24,7 @@ public:
 	void PlayFireMontage(bool bAiming);
 	void PlayElimMontage();
 	virtual void OnRep_ReplicatedMovement() override;
+	virtual void Destroyed() override;
 
 	void Elim();
 
@@ -160,6 +161,19 @@ private:
 	/** Material instance set on the Blueprint, used with the dynamic material instance */
 	UPROPERTY(EditAnywhere, Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
+
+	/**
+	 * Elim bot
+	 */
+
+	 UPROPERTY(EditAnywhere)
+	 UParticleSystem* ElimBotEffect;
+
+	 UPROPERTY(VisibleAnywhere)
+	 UParticleSystemComponent* ElimBotComponent;
+
+	 UPROPERTY(EditAnywhere)
+	 class USoundCue* ElimBotSound;
 
 
 
