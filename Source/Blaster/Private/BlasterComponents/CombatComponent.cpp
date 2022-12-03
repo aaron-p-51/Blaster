@@ -180,7 +180,7 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 
 void UCombatComponent::Fire()
 {
-	if (bCanFire)
+	if (CanFire())
 	{
 		bCanFire = false;
 
@@ -191,6 +191,13 @@ void UCombatComponent::Fire()
 		}
 		StartFireTimer();
 	}
+}
+
+
+bool UCombatComponent::CanFire()
+{
+	if (EquippedWeapon == nullptr) return false;
+	return !EquippedWeapon->ISEmpty() || !bCanFire;
 }
 
 

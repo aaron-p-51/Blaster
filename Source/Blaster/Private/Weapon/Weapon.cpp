@@ -170,7 +170,7 @@ void AWeapon::SetHUDAmmo()
 
 void AWeapon::SpendRound()
 {
-	--Ammo;
+	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
 	SetHUDAmmo();
 }
 
@@ -194,6 +194,12 @@ void AWeapon::OnRep_Owner()
 	{
 		SetHUDAmmo();
 	}
+}
+
+
+bool AWeapon::ISEmpty()
+{
+	return Ammo <= 0;
 }
 
 
