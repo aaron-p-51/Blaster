@@ -197,7 +197,7 @@ void AWeapon::OnRep_Owner()
 }
 
 
-bool AWeapon::ISEmpty()
+bool AWeapon::IsEmpty()
 {
 	return Ammo <= 0;
 }
