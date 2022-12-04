@@ -24,6 +24,8 @@ public:
 
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 
+	
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -38,6 +40,9 @@ protected:
 
 	void FireButtonPressed(bool bPressed);
 
+	/**
+	 * Fire
+	 */
 	void Fire();
 
 	UFUNCTION(Server, Reliable)
@@ -45,6 +50,14 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
+
+	/**
+	 * Reload
+	 */
+	void Reload();
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
