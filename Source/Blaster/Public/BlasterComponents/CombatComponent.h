@@ -64,6 +64,9 @@ protected:
 
 	void HandleReload();
 
+	int32 AmountToReload();
+
+
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
 	void SetHUDCrosshairs(float DeltaTime);
@@ -144,6 +147,8 @@ private:
 	   void OnRep_CarriedAmmo();
 
 	   TMap<EWeaponType, int32> CarriedAmmoMap;
+
+	   void UpdateAmmoValues();
 
 	   UPROPERTY(EditAnywhere)
 	   int32 StartingAssultRifleAmmo = 30;
