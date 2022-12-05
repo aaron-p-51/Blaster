@@ -113,7 +113,7 @@ private:
 	  * Aiming and FOV
 	  */
 
-	  // Field of view when not aiming, set to the camera's boase FOV in BeginPlay
+	  // Field of view when not aiming, set to the camera's base FOV in BeginPlay
 	  float DefaultFOV;
 
 	  UPROPERTY(EditAnywhere, Category = Combat)
