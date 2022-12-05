@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "HUD/BlasterHUD.h"
+#include "Weapon/WeaponTypes.h"
+#include "BlasterTypes/CombatState.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 80000.f
@@ -23,6 +25,10 @@ public:
 
 	void EquipWeapon(class AWeapon* WeaponToEquip);
 
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
+	
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -37,6 +43,9 @@ protected:
 
 	void FireButtonPressed(bool bPressed);
 
+	/**
+	 * Fire
+	 */
 	void Fire();
 
 	UFUNCTION(Server, Reliable)
@@ -44,6 +53,19 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
+
+	/**
+	 * Reload
+	 */
+	void Reload();
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
+
+	void HandleReload();
+
+	int32 AmountToReload();
+
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
@@ -91,7 +113,7 @@ private:
 	  * Aiming and FOV
 	  */
 
-	  // Field of view when not aiming, set to the camera's boase FOV in BeginPlay
+	  // Field of view when not aiming, set to the camera's base FOV in BeginPlay
 	  float DefaultFOV;
 
 	  UPROPERTY(EditAnywhere, Category = Combat)
@@ -114,6 +136,30 @@ private:
 
 	   void StartFireTimer();
 	   void FireTimerFinished();
+
+	   bool CanFire();
+
+	   // Carried ammo for the currently-equipped weapon
+	   UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
+	   int32 CarriedAmmo;
+
+	   UFUNCTION()
+	   void OnRep_CarriedAmmo();
+
+	   TMap<EWeaponType, int32> CarriedAmmoMap;
+
+	   void UpdateAmmoValues();
+
+	   UPROPERTY(EditAnywhere)
+	   int32 StartingAssultRifleAmmo = 30;
+
+	   void InitializeCarriedAmmo();
+
+	   UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	   ECombatState CombatState = ECombatState::ECS_Unoccupied;
+
+	   UFUNCTION()
+	   void OnRep_CombatState();
 
 public:	
 	
