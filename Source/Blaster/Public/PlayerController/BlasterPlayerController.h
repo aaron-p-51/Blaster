@@ -65,6 +65,8 @@ protected:
 
 	 void CheckTimeSync(float DeltaTime);
 
+	 void HandleMatchHasStarted();
+
 	 
 
 private:
